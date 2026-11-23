@@ -98,6 +98,15 @@
     }).join('');
   }
 
+  /* Bild (vom Build als data-URI eingebettet) */
+  function pic(img, cls) {
+    if (!img || !img.src) return '';
+    let src = img.src;
+    if (src.startsWith('#img:')) { const n = document.getElementById('ab-img-' + src.slice(5)); src = n ? n.textContent.trim() : ''; }
+    const cap = img.caption ? '<figcaption>' + mdInline(img.caption) + (HELP_DE && img.captionDe ? '<span class="de">' + esc(img.captionDe) + '</span>' : '') + '</figcaption>' : '';
+    return '<figure class="pic protect' + (cls ? ' ' + cls : '') + '"><img src="' + esc(src) + '" alt="' + esc(img.alt || '') + '" draggable="false"' + (img.w && img.h ? ' width="' + img.w + '" height="' + img.h + '"' : '') + '>' + cap + '</figure>';
+  }
+
   /* ---------- Daten laden ---------- */
   const dataEl = document.getElementById('ab-data');
   let S;
@@ -305,11 +314,12 @@
     multi: tk => tk.multi || tk.options.filter(o => o.ok).length > 1,
     render(tk, st, box, api) {
       const v = view(tk), multi = this.multi(tk), sel = new Set(st.resp || []);
-      const wrap = el('div', { class: 'opts', role: multi ? 'group' : 'radiogroup' });
+      const hasPics = tk.options.some(o => o.img);
+      const wrap = el('div', { class: 'opts' + (hasPics ? ' pics' : ''), role: multi ? 'group' : 'radiogroup' });
       v.order.forEach(i => {
         const o = tk.options[i];
         const b = el('button', { type: 'button', class: 'opt protect' + (multi ? ' multi' : ''), 'aria-pressed': sel.has(i) ? 'true' : 'false', 'data-i': i },
-          '<span class="box" aria-hidden="true"></span><span>' + mdInline(o.t) + (HELP_DE && o.de ? '<span class="de">' + esc(o.de) + '</span>' : '') + '</span>');
+          '<span class="box" aria-hidden="true"></span><span class="otxt">' + (o.img ? pic(o.img, 'opt-pic') : '') + mdInline(o.t) + (HELP_DE && o.de ? '<span class="de">' + esc(o.de) + '</span>' : '') + '</span>');
         if (st.final) b.disabled = true;
         if (st.items) {
           if (sel.has(i) && st.items.ok) b.classList.add('ok');
@@ -890,6 +900,7 @@
     if (!isInfo(tk)) head += '<span class="pts">' + esc(ptsLabel(maxPts(tk))) + (isTeacher(tk) ? ' · ' + esc(t('stTeacher')) : '') + '</span>';
     head += '<h2 class="protect">' + mdInline(tk.title || (isInfo(tk) ? '' : t('task'))) + '</h2>';
     if (tk.prompt) head += '<div class="prompt protect">' + mdInline(tk.prompt) + deLine(tk, 'prompt') + '</div>';
+    if (tk.image) head += pic(tk.image);
     card.innerHTML = head;
     const body = el('div', { class: 'task-body' }); card.appendChild(body);
     const hintBox = el('div'); card.appendChild(hintBox);

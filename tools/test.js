@@ -117,6 +117,10 @@ async function noOverflow(p, label) {
   ok(o.sw <= o.cw + 1, label + ': waagrechtes Scrollen (' + o.sw + ' > ' + o.cw + ')');
   const ph = await p.evaluate(() => (document.body.innerText.match(/\{[a-zA-Z]+\}|undefined|NaN/g) || []).join(' '));
   ok(!ph, label + ': Platzhalter oder undefined im Text: ' + ph);
+  const imgs = await p.evaluate(() => Array.from(document.images).map(i => ({ ok: i.complete && i.naturalWidth > 0, alt: (i.getAttribute('alt') || '').trim().length, w: i.getBoundingClientRect().width })));
+  ok(imgs.every(i => i.ok), label + ': Bild nicht geladen');
+  ok(imgs.every(i => i.alt >= 5), label + ': Bild ohne Alternativtext');
+
 }
 async function start(p, name) {
   await p.fill('#ab-name', name);
@@ -343,8 +347,8 @@ print(json.dumps({'P':json.loads(raw),'sum':str(m['/Keywords'])=='ab-sum:'+want,
   /* 3: Modus "end" (Rückmeldung erst nach der Abgabe) mit derselben Datei, umgebaut */
   {
     const endSheet = JSON.parse(JSON.stringify(S)); endSheet.id = S.id + '-end'; endSheet.settings = Object.assign({}, S.settings, { feedback: 'end' }); endSheet.lang = 'de'; endSheet.class = null; endSheet.classes = null;
-    const sp = path.join(tmp, 'end.json'); fs.writeFileSync(sp, JSON.stringify(endSheet));
-    execFileSync('python3', [path.join(ROOT, 'tools', 'build.py'), sp, '--salt', 'test', '--out', tmp]);
+    const sp = path.join(path.dirname(path.resolve(sheetPath)), '.test-end-' + process.pid + '.json'); fs.writeFileSync(sp, JSON.stringify(endSheet));
+    try { execFileSync('python3', [path.join(ROOT, 'tools', 'build.py'), sp, '--salt', 'test', '--out', tmp]); } finally { fs.unlinkSync(sp); }
     const ctx = await b.newContext({ viewport: { width: 1024, height: 768 }, acceptDownloads: true });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
     await p.goto('file://' + path.join(tmp, endSheet.id + '.html'));

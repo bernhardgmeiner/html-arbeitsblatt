@@ -255,6 +255,55 @@ def check_task(tk, sid, c, seen, help_de, hint_cost, S):
         if not (tk.get("text") or tk.get("glossary")): c.err(where, "Infoblock ohne text oder glossary")
 
 
+IMG_TYPES = {".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".svg": "image/svg+xml"}
+
+
+def embed_images(S, base, c, help_de):
+    """Bilder (image bei Aufgaben/Info, img bei Auswahl-Optionen) prüfen und als data-URI einbetten."""
+    found = []
+
+    def one(img, where):
+        if not isinstance(img, dict) or not img.get("src"):
+            c.err(where, "Bild braucht ein Objekt mit src"); return
+        if not str(img.get("alt", "")).strip() or len(img["alt"].strip()) < 5:
+            c.err(where, "Bild braucht einen Alternativtext (alt), der beschreibt, was zu sehen ist")
+        if img["src"].startswith("data:"):
+            found.append((where, len(img["src"]) * 3 // 4)); return
+        path = os.path.normpath(os.path.join(base, img["src"]))
+        ext = os.path.splitext(path)[1].lower()
+        if ext not in IMG_TYPES:
+            c.err(where, f"Bildformat {ext} nicht erlaubt (webp, png, jpg, svg)"); return
+        if not os.path.isfile(path):
+            c.err(where, f"Bild nicht gefunden: {img['src']}"); return
+        data = open(path, "rb").read()
+        kb = len(data) // 1024
+        if kb > 400: c.err(where, f"Bild {img['src']} hat {kb} KB; höchstens 400, besser unter 150 (tools/bild.py)")
+        elif kb > 150: c.warn(where, f"Bild {img['src']} hat {kb} KB; mit tools/bild.py verkleinern")
+        if ext != ".svg":
+            try:
+                from PIL import Image
+                with Image.open(path) as im:
+                    img["w"], img["h"] = im.size
+                    if im.size[0] > 1400: c.warn(where, f"Bild {img['src']} ist {im.size[0]} px breit; 900 bis 1200 reichen")
+            except Exception as e:
+                c.warn(where, f"Bildgröße nicht lesbar ({e})")
+        img["src"] = f"data:{IMG_TYPES[ext]};base64," + base64.b64encode(data).decode()
+        found.append((where, len(data)))
+
+    for st in S.get("stations", []):
+        for tk in st.get("tasks", []):
+            for t in (tk.get("tasks", []) if tk.get("type") == "pool" else [tk]):
+                where = f"{st.get('id')}/{t.get('id')}"
+                if t.get("image"): one(t["image"], where)
+                for o in t.get("options", []) or []:
+                    if isinstance(o, dict) and o.get("img"): one(o["img"], where + " Option „" + str(o.get("t")) + "“")
+    if len(found) > 4:
+        c.warn("Bilder", f"{len(found)} Bilder: mehr als vier machen die Datei schwer und lenken ab")
+    total = sum(n for _, n in found) // 1024
+    if total > 900: c.warn("Bilder", f"Bilder zusammen {total} KB; die Datei wird groß (Handy, schwaches WLAN)")
+    return found
+
+
 def canonical_hash(S):
     return hashlib.sha256(json.dumps(S, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16]
 
@@ -319,7 +368,30 @@ def csp_hash(s):
     return "sha256-" + base64.b64encode(hashlib.sha256(s.encode()).digest()).decode()
 
 
+def split_images(S):
+    """Jedes Bild nur einmal und außerhalb der verschleierten Daten ablegen (Bilder sind keine Lösungen)."""
+    pool, html_parts = {}, []
+
+    def take(img):
+        src = img.get("src", "")
+        if not src.startswith("data:"): return
+        if src not in pool:
+            pool[src] = len(pool)
+            html_parts.append(f'<script type="text/plain" id="ab-img-{pool[src]}">{src}</script>')
+        img["src"] = "#img:" + str(pool[src])
+
+    for st in S.get("stations", []):
+        for tk in st.get("tasks", []):
+            for t in (tk.get("tasks", []) if tk.get("type") == "pool" else [tk]):
+                if t.get("image"): take(t["image"])
+                for o in t.get("options", []) or []:
+                    if isinstance(o, dict) and o.get("img"): take(o["img"])
+    return "\n".join(html_parts)
+
+
 def build_html(S, salt_b64):
+    S = json.loads(json.dumps(S))
+    imgs = split_images(S)
     css = font_css() + "\n" + open(os.path.join(ROOT, "engine", "style.css"), encoding="utf-8").read()
     js = open(os.path.join(ROOT, "engine", "engine.js"), encoding="utf-8").read()
     pdf = open(os.path.join(ROOT, "vendor", "jspdf.umd.min.js"), encoding="utf-8").read()
@@ -349,6 +421,7 @@ def build_html(S, salt_b64):
 <div class="ki-hinweis" aria-hidden="true">{html.escape(AI_NOTICE_DE)} {html.escape(AI_NOTICE_EN)}</div>
 <noscript><p style="padding:24px">Dieses Arbeitsblatt braucht JavaScript. / This worksheet needs JavaScript.</p></noscript>
 <!-- {AI_NOTICE_DE} -->
+{imgs}
 <script id="ab-data" type="application/octet-stream" data-k="{salt_b64}">{data}</script>
 <script>{s_pdf}</script>
 <script>{s_js}</script>
@@ -382,6 +455,7 @@ def key_html(S):
                 elif tk["type"] != "pool": total_auto += mp
                 rows.append(f"<div class='t'><h3>{md_inline(t.get('title', t['id']))} <span class='p'>{mp:g} P.</span></h3>")
                 if t.get("prompt"): rows.append(f"<p class='pr'>{md_inline(t['prompt'])}</p>")
+                if t.get("image", {}).get("src", "").startswith("data:"): rows.append(f"<img class='thumb' src='{t['image']['src']}' alt=''>")
                 rows.append(solution_html(t))
                 if t.get("feedback") or t.get("gapFeedback"):
                     fb = dict(t.get("feedback") or {})
@@ -410,7 +484,7 @@ h1{{font-size:20pt;margin:0 0 4pt}} h2{{font-size:13pt;margin:16pt 0 6pt;border-
 h3{{font-size:11pt;margin:0 0 3pt}} .p{{float:right;font-weight:normal;color:#666}}
 .t{{break-inside:avoid;margin:0 0 10pt;padding:6pt 8pt;border:1pt solid #e5e0d6;border-radius:5pt}}
 .pr{{color:#555;margin:0 0 4pt}} .sol{{color:#1f6b35}} .s{{margin:4pt 0 2pt;color:#555;font-size:9.5pt}} ul,ol{{margin:2pt 0 2pt 14pt;padding:0;font-size:9.5pt}}
-.meta{{color:#555;font-size:9.5pt}} .pool{{font-style:italic;color:#8F3B2C}} table{{border-collapse:collapse}} td{{padding:1pt 8pt 1pt 0;vertical-align:top}}
+.meta{{color:#555;font-size:9.5pt}} .thumb{{max-width:60mm;max-height:40mm;display:block;margin:2pt 0 4pt;border-radius:3pt}} .pool{{font-style:italic;color:#8F3B2C}} table{{border-collapse:collapse}} td{{padding:1pt 8pt 1pt 0;vertical-align:top}}
 </style></head><body>
 <h1>Lösungen: {html.escape(S['title'])}</h1>
 <div class="meta">{html.escape(' · '.join(x for x in [S.get('subject'), S.get('class'), S.get('level')] if x))}<br>
@@ -468,6 +542,7 @@ def main():
     S = json.load(open(a.sheet, encoding="utf-8"))
     c = Checker()
     validate(S, c)
+    pics = embed_images(S, os.path.dirname(os.path.abspath(a.sheet)), c, S.get("lang", "en") == "en" and S.get("helpDe", True))
     acc = accent_vars(S, c)
     for w in c.warnings: print(w)
     for e in c.errors: print(e)

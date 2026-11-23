@@ -193,6 +193,18 @@ textarea.write{min-height:14em;line-height:1.6;resize:vertical}
 .info-text ul{margin:.3em 0 .6em;padding-left:1.2em}
 .glossary{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:.4em 0}
 
+/* Bilder */
+.pic{margin:14px 0 4px;padding:0}
+.pic img{display:block;width:100%;max-width:760px;height:auto;border-radius:var(--r-s);border:1px solid var(--line);background:var(--panel-2);pointer-events:none}
+.pic figcaption{font-size:.86em;color:var(--muted);margin-top:6px}
+.opts.pics{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt .box{position:absolute;margin:8px}
+.opts.pics .opt{position:relative}
+.opt .otxt{display:block;min-width:0}
+.opt-pic{margin:0 0 8px}
+.opt-pic img{max-width:100%}
+
 /* Übersicht */
 .ov-station{margin-bottom:16px}
 .ov-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}

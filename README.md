@@ -6,7 +6,7 @@ Gebaut von Bernhard Gmeiner (GRG 15 Auf der Schmelz, Wien) mit Claude. Angeregt 
 
 ## Was die Datei kann
 
-- Aufgabentypen: Auswahl (eine oder mehrere), Lückentext (tippen oder antippen, mit Wortkasten), Zuordnen, Sortieren, Reihenfolge, Markieren im Text, freies Schreiben (bewertet die Lehrperson), Info- und Lesetexte.
+- Aufgabentypen: Auswahl (eine oder mehrere), Lückentext (tippen oder antippen, mit Wortkasten), Zuordnen, Sortieren, Reihenfolge, Markieren im Text, freies Schreiben (bewertet die Lehrperson), Info- und Lesetexte; Bilder als Schreibanlass und als Antwortmöglichkeiten.
 - Mehrere richtige Schreibweisen pro Lücke; Kurzformen gelten automatisch gleich (`didn't` = `did not`).
 - Rückmeldung, die erklärt, warum eine Antwort falsch ist; nach dem letzten Versuch die Lösung.
 - Punkte mit Abzug für spätere Versuche und Hinweise, Variantenpools, Verzweigung in Weg Basis und Weg Plus.
@@ -22,8 +22,8 @@ Gebaut von Bernhard Gmeiner (GRG 15 Auf der Schmelz, Wien) mit Claude. Angeregt 
 | `engine/` | `engine.js`, `style.css` |
 | `fonts/` | Atkinson Hyperlegible, Bricolage Grotesque (SIL OFL 1.1) |
 | `vendor/` | jsPDF 2.5.2 (MIT) |
-| `tools/` | `build.py`, `test.js`, `auswerten.py`, `pdf.js`, `veroeffentlichen.sh` |
-| `beispiel/` | Beispielblatt mit allen Aufgabentypen (für Tests) |
+| `tools/` | `build.py`, `test.js`, `auswerten.py`, `bild.py`, `pdf.js`, `veroeffentlichen.sh` |
+| `beispiel/` | Beispielblatt mit allen Aufgabentypen und Bildern (für Tests) |
 | `anleitung/` | `FORMAT.md` (Blattformat), `CHECKLISTE.md` |
 | `docs/` | veröffentlichte Blätter für GitHub Pages: `https://bernhardgmeiner.github.io/html-arbeitsblatt/<id>/` |
 

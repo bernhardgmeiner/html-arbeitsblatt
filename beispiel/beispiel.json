@@ -19,28 +19,97 @@
     "allowSkip": true,
     "allowPause": true,
     "selfDeclaration": true,
-    "surveillance": { "paste": true, "copy": true, "focus": true, "time": true }
+    "surveillance": {
+      "paste": true,
+      "copy": true,
+      "focus": true,
+      "time": true
+    }
   },
-  "route": { "from": ["s1"], "threshold": 0.6 },
+  "route": {
+    "from": [
+      "s1"
+    ],
+    "threshold": 0.6
+  },
   "stations": [
     {
       "id": "s1",
       "title": "Warm-up",
       "tasks": [
-        { "id": "read", "type": "info", "title": "Mia's Saturday", "style": "text", "lines": true,
-          "text": "Last Saturday Mia woke up early.\nShe walked to the park with her dog Toby.\nSuddenly Toby saw a cat and ran away.\nMia looked everywhere, but she didn't find him.\nIn the evening Toby came home on his own." },
-        { "id": "c1", "type": "choice", "title": "Who ran away?", "prompt": "Choose the right answer.", "promptDe": "Wähle die richtige Antwort.",
-          "options": [ { "t": "Toby", "ok": true }, { "t": "Mia", "fb": "Mia looked for someone. Read line 3 again." }, { "t": "the cat", "fb": "The cat was there, but who ran? Line 3." } ],
-          "hints": ["Look at line 3."] },
-        { "id": "g1", "type": "gaps", "title": "Regular verbs", "prompt": "Write the verbs in the past simple.", "promptDe": "Schreib die Verben im Past Simple.",
+        {
+          "id": "read",
+          "type": "info",
+          "title": "Mia's Saturday",
+          "style": "text",
+          "lines": true,
+          "text": "Last Saturday Mia woke up early.\nShe walked to the park with her dog Toby.\nSuddenly Toby saw a cat and ran away.\nMia looked everywhere, but she didn't find him.\nIn the evening Toby came home on his own."
+        },
+        {
+          "id": "c1",
+          "type": "choice",
+          "title": "Who ran away?",
+          "prompt": "Choose the right answer.",
+          "promptDe": "Wähle die richtige Antwort.",
+          "options": [
+            {
+              "t": "Toby",
+              "ok": true
+            },
+            {
+              "t": "Mia",
+              "fb": "Mia looked for someone. Read line 3 again."
+            },
+            {
+              "t": "the cat",
+              "fb": "The cat was there, but who ran? Line 3."
+            }
+          ],
+          "hints": [
+            "Look at line 3."
+          ]
+        },
+        {
+          "id": "g1",
+          "type": "gaps",
+          "title": "Regular verbs",
+          "prompt": "Write the verbs in the past simple.",
+          "promptDe": "Schreib die Verben im Past Simple.",
           "text": "Mia {{walked}} (walk) to the park. She {{looked}} (look) everywhere. They {{stopped}} (stop) at the gate.",
-          "feedback": { "stoped": "Short verbs with one vowel and one consonant at the end double the last letter.", "walk": "Past simple: add **-ed**." },
-          "hints": ["Regular verbs end in **-ed**.", "stop → double p"], "explain": "Regular verbs get **-ed**. Short verbs like *stop* double the last letter." },
-        { "id": "g2", "type": "gaps", "title": "Choose the form", "prompt": "Tap the right form.", "promptDe": "Tippe die richtige Form an.",
+          "feedback": {
+            "stoped": "Short verbs with one vowel and one consonant at the end double the last letter.",
+            "walk": "Past simple: add **-ed**."
+          },
+          "hints": [
+            "Regular verbs end in **-ed**.",
+            "stop → double p"
+          ],
+          "explain": "Regular verbs get **-ed**. Short verbs like *stop* double the last letter."
+        },
+        {
+          "id": "g2",
+          "type": "gaps",
+          "title": "Choose the form",
+          "prompt": "Tap the right form.",
+          "promptDe": "Tippe die richtige Form an.",
           "text": "Toby {{*ran|runned|run}} away. Mia {{*didn't find|didn't found|not found}} him.",
-          "gapFeedback": { "1": { "runned": "*run* is an irregular verb. It does not take -ed." }, "2": { "didn't found": "After *didn't* the verb stays in the base form." } } },
-        { "id": "g3", "type": "gaps", "title": "Contractions count too", "prompt": "Make the sentence negative.", "promptDe": "Verneine den Satz.",
-          "text": "Toby came home. → Toby {{didn't come|did not come}} home." }
+          "gapFeedback": {
+            "1": {
+              "runned": "*run* is an irregular verb. It does not take -ed."
+            },
+            "2": {
+              "didn't found": "After *didn't* the verb stays in the base form."
+            }
+          }
+        },
+        {
+          "id": "g3",
+          "type": "gaps",
+          "title": "Contractions count too",
+          "prompt": "Make the sentence negative.",
+          "promptDe": "Verneine den Satz.",
+          "text": "Toby came home. → Toby {{didn't come|did not come}} home."
+        }
       ]
     },
     {
@@ -48,11 +117,59 @@
       "title": "More practice",
       "track": "basis",
       "tasks": [
-        { "id": "m1", "type": "match", "title": "Irregular verbs", "prompt": "Match the verbs to their past forms.", "promptDe": "Ordne die Verben ihren Vergangenheitsformen zu.",
-          "pairs": [ ["go", "went"], ["see", "saw"], ["come", "came"] ], "extra": ["goed"] },
-        { "id": "so1", "type": "sort", "title": "Regular or irregular?", "prompt": "Sort the verbs.", "promptDe": "Sortiere die Verben.",
-          "categories": ["regular", "irregular"],
-          "items": [ { "t": "played", "c": 0 }, { "t": "went", "c": 1 }, { "t": "stopped", "c": 0 }, { "t": "saw", "c": 1 } ] }
+        {
+          "id": "m1",
+          "type": "match",
+          "title": "Irregular verbs",
+          "prompt": "Match the verbs to their past forms.",
+          "promptDe": "Ordne die Verben ihren Vergangenheitsformen zu.",
+          "pairs": [
+            [
+              "go",
+              "went"
+            ],
+            [
+              "see",
+              "saw"
+            ],
+            [
+              "come",
+              "came"
+            ]
+          ],
+          "extra": [
+            "goed"
+          ]
+        },
+        {
+          "id": "so1",
+          "type": "sort",
+          "title": "Regular or irregular?",
+          "prompt": "Sort the verbs.",
+          "promptDe": "Sortiere die Verben.",
+          "categories": [
+            "regular",
+            "irregular"
+          ],
+          "items": [
+            {
+              "t": "played",
+              "c": 0
+            },
+            {
+              "t": "went",
+              "c": 1
+            },
+            {
+              "t": "stopped",
+              "c": 0
+            },
+            {
+              "t": "saw",
+              "c": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -60,30 +177,152 @@
       "title": "Challenge",
       "track": "plus",
       "tasks": [
-        { "id": "p1", "type": "pool", "pick": 1, "tasks": [
-          { "id": "p1a", "type": "gaps", "title": "Irregular verbs A", "prompt": "Write the past simple.", "promptDe": "Schreib das Past Simple.",
-            "text": "go → {{went}}, see → {{saw}}", "bank": true, "bankExtra": ["goed"] },
-          { "id": "p1b", "type": "gaps", "title": "Irregular verbs B", "prompt": "Write the past simple.", "promptDe": "Schreib das Past Simple.",
-            "text": "come → {{came}}, find → {{found}}", "bank": true, "bankExtra": ["finded"] }
-        ] },
-        { "id": "mc1", "type": "choice", "title": "Which sentences are in the past?", "prompt": "Choose all correct answers.", "promptDe": "Wähle alle richtigen Antworten.", "multi": true,
-          "options": [ { "t": "Mia woke up early.", "ok": true }, { "t": "Toby runs away.", "fb": "*runs* is present simple." }, { "t": "They looked everywhere.", "ok": true }, { "t": "We go home.", "fb": "*go* is present simple." } ] }
+        {
+          "id": "p1",
+          "type": "pool",
+          "pick": 1,
+          "tasks": [
+            {
+              "id": "p1a",
+              "type": "gaps",
+              "title": "Irregular verbs A",
+              "prompt": "Write the past simple.",
+              "promptDe": "Schreib das Past Simple.",
+              "text": "go → {{went}}, see → {{saw}}",
+              "bank": true,
+              "bankExtra": [
+                "goed"
+              ]
+            },
+            {
+              "id": "p1b",
+              "type": "gaps",
+              "title": "Irregular verbs B",
+              "prompt": "Write the past simple.",
+              "promptDe": "Schreib das Past Simple.",
+              "text": "come → {{came}}, find → {{found}}",
+              "bank": true,
+              "bankExtra": [
+                "finded"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mc1",
+          "type": "choice",
+          "title": "Which sentences are in the past?",
+          "prompt": "Choose all correct answers.",
+          "promptDe": "Wähle alle richtigen Antworten.",
+          "multi": true,
+          "options": [
+            {
+              "t": "Mia woke up early.",
+              "ok": true
+            },
+            {
+              "t": "Toby runs away.",
+              "fb": "*runs* is present simple."
+            },
+            {
+              "t": "They looked everywhere.",
+              "ok": true
+            },
+            {
+              "t": "We go home.",
+              "fb": "*go* is present simple."
+            }
+          ]
+        }
       ]
     },
     {
       "id": "s4",
       "title": "Story",
       "tasks": [
-        { "id": "o1", "type": "order", "title": "Put the story in order", "prompt": "Move the parts into the right order.", "promptDe": "Bring die Teile in die richtige Reihenfolge.",
-          "items": [ "Mia woke up early.", "She walked to the park with Toby.", "Toby saw a cat and ran away.", "In the evening Toby came home." ] },
-        { "id": "mk1", "type": "mark", "title": "Find the past forms", "prompt": "Tap all verbs in the past simple.", "promptDe": "Tippe alle Verben im Past Simple an.",
-          "text": "Yesterday Ben [missed] the bus. He [ran] to school and [was] late. His teacher is nice." },
-        { "id": "w1", "type": "write", "title": "Your story", "prompt": "Write a short story about a day when something went wrong.", "promptDe": "Schreib eine kurze Geschichte über einen Tag, an dem etwas schiefging.",
-          "points": 10, "minWords": 40, "maxWords": 80, "starter": "Last weekend …",
-          "useWords": ["suddenly", "then", "finally"],
-          "checklist": ["My story is in the past simple.", "It has a beginning, a middle and an end."],
-          "checklistDe": ["Meine Geschichte steht im Past Simple.", "Sie hat einen Anfang, einen Mittelteil und einen Schluss."],
-          "criteria": ["Past simple used correctly", "Clear order of events", "Linking words"] }
+        {
+          "id": "o1",
+          "type": "order",
+          "title": "Put the story in order",
+          "prompt": "Move the parts into the right order.",
+          "promptDe": "Bring die Teile in die richtige Reihenfolge.",
+          "items": [
+            "Mia woke up early.",
+            "She walked to the park with Toby.",
+            "Toby saw a cat and ran away.",
+            "In the evening Toby came home."
+          ]
+        },
+        {
+          "id": "mk1",
+          "type": "mark",
+          "title": "Find the past forms",
+          "prompt": "Tap all verbs in the past simple.",
+          "promptDe": "Tippe alle Verben im Past Simple an.",
+          "text": "Yesterday Ben [missed] the bus. He [ran] to school and [was] late. His teacher is nice."
+        },
+        {
+          "id": "pc1",
+          "type": "choice",
+          "title": "When does the story happen?",
+          "prompt": "Tap the right picture.",
+          "promptDe": "Tippe das richtige Bild an.",
+          "options": [
+            {
+              "t": "at night",
+              "ok": true,
+              "img": {
+                "src": "bilder/nacht.svg",
+                "alt": "A moon and stars in a dark sky"
+              }
+            },
+            {
+              "t": "during the day",
+              "fb": "Look at the sky in the big picture again.",
+              "img": {
+                "src": "bilder/tag.svg",
+                "alt": "A sun in a blue sky"
+              }
+            }
+          ],
+          "image": {
+            "src": "bilder/haus-bei-nacht.webp",
+            "alt": "An old wooden house at night in the snow. One window is lit. A cat sits on the fence, and footprints lead to the door."
+          }
+        },
+        {
+          "id": "w1",
+          "type": "write",
+          "title": "Your story",
+          "prompt": "Look at the picture. What happened at this house last night? Write a short story.",
+          "promptDe": "Schau dir das Bild an. Was ist letzte Nacht bei diesem Haus passiert? Schreib eine kurze Geschichte.",
+          "points": 10,
+          "minWords": 40,
+          "maxWords": 80,
+          "starter": "Last night …",
+          "useWords": [
+            "suddenly",
+            "then",
+            "finally"
+          ],
+          "checklist": [
+            "My story is in the past simple.",
+            "It has a beginning, a middle and an end."
+          ],
+          "checklistDe": [
+            "Meine Geschichte steht im Past Simple.",
+            "Sie hat einen Anfang, einen Mittelteil und einen Schluss."
+          ],
+          "criteria": [
+            "Past simple used correctly",
+            "Clear order of events",
+            "Linking words"
+          ],
+          "image": {
+            "src": "bilder/haus-bei-nacht.webp",
+            "alt": "An old wooden house at night in the snow. One window is lit. A cat sits on the fence, and footprints lead to the door."
+          }
+        }
       ]
     }
   ]

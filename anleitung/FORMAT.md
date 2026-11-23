@@ -61,6 +61,19 @@ Immer aktiv, nicht abschaltbar: großer Texteinschub wird protokolliert (ab 18 Z
 | `explain`, `explainDe` | Erklärung nach dem letzten falschen Versuch |
 | `explainOk` | Satz, der bei richtiger Lösung erscheint |
 
+## Bilder
+
+Jede Aufgabe und jeder Infoblock kann ein Bild über dem Inhalt zeigen, Auswahl-Optionen können Bilder statt nur Text haben:
+
+```json
+"image": { "src": "bilder/haus-bei-nacht.webp", "alt": "An old wooden house at night …", "caption": "…", "captionDe": "…" }
+"options": [ { "t": "at night", "ok": true, "img": { "src": "bilder/nacht.svg", "alt": "A moon and stars" } } ]
+```
+
+`src` ist ein Pfad relativ zur `blatt.json` (WebP, PNG, JPG oder SVG); der Build bettet das Bild als Daten in die Datei ein. `alt` ist Pflicht (mindestens 5 Zeichen, beschreibt, was zu sehen ist, in der Sprache des Blatts). Größe: ab 150 KB Warnung, ab 400 KB Fehler; `python3 tools/bild.py ein.png aus.webp` verkleinert auf 1000 px Breite und unter 150 KB. Mehr als vier Bilder pro Blatt: Warnung. Bilder lassen sich nicht ziehen, kopieren oder per Rechtsklick speichern (solange `surveillance.copy` an ist). Im Lösungsblatt erscheinen sie klein, im Abgabe-PDF nicht.
+
+Woher die Bilder kommen: mit dem Skill `code-bilder` aus Code gemalt (keine Bildrechte, kein Bildgenerator) oder eigene Fotos und Zeichnungen. Keine Bilder aus dem Lehrwerk oder aus dem Netz.
+
 Markdown light überall: `**fett**`, `*kursiv*`, Leerzeile = Absatz, Zeilen mit `- ` = Liste.
 
 ## Typen
@@ -113,4 +126,5 @@ Sind alle bewerteten Aufgaben der Stationen in `from` erledigt oder übersprunge
 ## Was der Build prüft
 
 Fehler (bricht ab): fehlende Pflichtfelder, doppelte ids, unbekannte Typen, Lücken ohne Antwort, gleiche Optionen (auch über Kurzformen: `didn't find` = `did not find`), Rückmeldung auf eine richtige Antwort, mehrdeutige Zuordnungen, Kategorien außerhalb, Schreibaufgabe ohne Punkte, kaputte Klammern, Verzweigung ohne beide Wege.
-Warnungen: fehlende deutsche Zeilen, fehlende Überschriften, Raten möglich, Rückmeldung verrät schon beim ersten Versuch die Lösung, Hinweise so teuer wie die Aufgabe, Tippfehler-Toleranz mit Beispiel, ungleiche Pool-Punkte, Geviertstrich (—).
+Fehler bei Bildern: fehlende Datei, falsches Format, fehlender Alternativtext, über 400 KB.
+Warnungen: Bild über 150 KB oder breiter als 1400 px, mehr als vier Bilder, fehlende deutsche Zeilen, fehlende Überschriften, Raten möglich, Rückmeldung verrät schon beim ersten Versuch die Lösung, Hinweise so teuer wie die Aufgabe, Tippfehler-Toleranz mit Beispiel, ungleiche Pool-Punkte, Geviertstrich (—).
