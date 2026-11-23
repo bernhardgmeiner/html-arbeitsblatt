@@ -34,11 +34,11 @@
           "hints": ["Look at line 3."] },
         { "id": "g1", "type": "gaps", "title": "Regular verbs", "prompt": "Write the verbs in the past simple.", "promptDe": "Schreib die Verben im Past Simple.",
           "text": "Mia {{walked}} (walk) to the park. She {{looked}} (look) everywhere. They {{stopped}} (stop) at the gate.",
-          "feedback": { "stoped": "With short verbs like *stop* you double the last letter: stop → stopped.", "walk": "Past simple: add **-ed**." },
+          "feedback": { "stoped": "Short verbs with one vowel and one consonant at the end double the last letter.", "walk": "Past simple: add **-ed**." },
           "hints": ["Regular verbs end in **-ed**.", "stop → double p"], "explain": "Regular verbs get **-ed**. Short verbs like *stop* double the last letter." },
         { "id": "g2", "type": "gaps", "title": "Choose the form", "prompt": "Tap the right form.", "promptDe": "Tippe die richtige Form an.",
           "text": "Toby {{*ran|runned|run}} away. Mia {{*didn't find|didn't found|not found}} him.",
-          "gapFeedback": { "1": { "runned": "*run* is irregular: run → ran." }, "2": { "didn't found": "After *didn't* the verb stays in the base form: didn't **find**." } } },
+          "gapFeedback": { "1": { "runned": "*run* is an irregular verb. It does not take -ed." }, "2": { "didn't found": "After *didn't* the verb stays in the base form." } } },
         { "id": "g3", "type": "gaps", "title": "Contractions count too", "prompt": "Make the sentence negative.", "promptDe": "Verneine den Satz.",
           "text": "Toby came home. → Toby {{didn't come|did not come}} home." }
       ]

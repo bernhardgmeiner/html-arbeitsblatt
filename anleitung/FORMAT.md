@@ -113,4 +113,4 @@ Sind alle bewerteten Aufgaben der Stationen in `from` erledigt oder übersprunge
 ## Was der Build prüft
 
 Fehler (bricht ab): fehlende Pflichtfelder, doppelte ids, unbekannte Typen, Lücken ohne Antwort, gleiche Optionen (auch über Kurzformen: `didn't find` = `did not find`), Rückmeldung auf eine richtige Antwort, mehrdeutige Zuordnungen, Kategorien außerhalb, Schreibaufgabe ohne Punkte, kaputte Klammern, Verzweigung ohne beide Wege.
-Warnungen: fehlende deutsche Zeilen, fehlende Überschriften, Raten möglich, Hinweise so teuer wie die Aufgabe, Tippfehler-Toleranz mit Beispiel, ungleiche Pool-Punkte, Geviertstrich (—).
+Warnungen: fehlende deutsche Zeilen, fehlende Überschriften, Raten möglich, Rückmeldung verrät schon beim ersten Versuch die Lösung, Hinweise so teuer wie die Aufgabe, Tippfehler-Toleranz mit Beispiel, ungleiche Pool-Punkte, Geviertstrich (—).

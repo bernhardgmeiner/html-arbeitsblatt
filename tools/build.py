@@ -178,6 +178,9 @@ def check_task(tk, sid, c, seen, help_de, hint_cost, S):
         if len(oks) > 1 and not tk.get("multi"): c.warn(where, "mehrere richtige Optionen: wird als Mehrfachauswahl angezeigt (multi: true setzen, um das klar zu machen)")
         texts = [norm(o.get("t")) for o in opts]
         if len(set(texts)) != len(texts): c.err(where, "zwei Optionen sind gleich")
+        for o in opts:
+            if o.get("fb") and any(norm(ok_["t"]) and re.search(r"(?<![a-z])" + re.escape(norm(ok_["t"])) + r"(?![a-z])", norm(o["fb"])) for ok_ in oks):
+                c.warn(where, f"Rückmeldung zu „{o['t']}“ nennt die richtige Option")
         if len(oks) == 1 and S.get("settings", {}).get("attempts", 2) >= len(opts):
             c.warn(where, f"{len(opts)} Optionen bei {S.get('settings', {}).get('attempts', 2)} Versuchen: durch Probieren immer lösbar")
     elif t == "gaps":
@@ -202,6 +205,14 @@ def check_task(tk, sid, c, seen, help_de, hint_cost, S):
                 if not g["pick"]:
                     for k in m:
                         if norm(k) in {norm(a) for a in g["ans"]}: c.err(where, f"gapFeedback {gi}: „{k}“ ist dort richtig")
+        def reveals(text, answers):
+            low = " " + norm(text) + " "
+            return [a for a in answers if len(a) >= 3 and re.search(r"(?<![a-z])" + re.escape(a) + r"(?![a-z])", low)]
+        all_fb = list((tk.get("feedback") or {}).items()) + [(k, v) for m in (tk.get("gapFeedback") or {}).values() for k, v in m.items()]
+        sols = sorted({norm(a) for g in gaps for a in (g["ans"] if not g["pick"] else [g["opts"][i] for i in g["ok"]])})
+        for k, v in all_fb:
+            r = reveals(v, sols)
+            if r: c.warn(where, f"Rückmeldung auf „{k}“ verrät die Lösung „{r[0]}“ schon beim ersten Versuch; Regel nennen statt Lösung")
         if tk.get("typo"):
             for i, g in enumerate(gaps, 1):
                 if g["pick"]: continue
