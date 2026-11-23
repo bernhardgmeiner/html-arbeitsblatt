@@ -1,0 +1,90 @@
+{
+  "id": "beispiel-alle-typen",
+  "version": 1,
+  "title": "A Weekend to Remember",
+  "subtitle": "Example sheet with every task type",
+  "subtitleDe": "Beispielblatt mit allen Aufgabentypen",
+  "subject": "Englisch",
+  "class": "2A",
+  "level": "A1+/A2",
+  "lang": "en",
+  "helpDe": true,
+  "accent": "#3E7CB1",
+  "submitTo": "Google Classroom",
+  "settings": {
+    "feedback": "instant",
+    "attempts": 2,
+    "laterFactor": 0.5,
+    "hintCost": 1,
+    "allowSkip": true,
+    "allowPause": true,
+    "selfDeclaration": true,
+    "surveillance": { "paste": true, "copy": true, "focus": true, "time": true }
+  },
+  "route": { "from": ["s1"], "threshold": 0.6 },
+  "stations": [
+    {
+      "id": "s1",
+      "title": "Warm-up",
+      "tasks": [
+        { "id": "read", "type": "info", "title": "Mia's Saturday", "style": "text", "lines": true,
+          "text": "Last Saturday Mia woke up early.\nShe walked to the park with her dog Toby.\nSuddenly Toby saw a cat and ran away.\nMia looked everywhere, but she didn't find him.\nIn the evening Toby came home on his own." },
+        { "id": "c1", "type": "choice", "title": "Who ran away?", "prompt": "Choose the right answer.", "promptDe": "Wähle die richtige Antwort.",
+          "options": [ { "t": "Toby", "ok": true }, { "t": "Mia", "fb": "Mia looked for someone. Read line 3 again." }, { "t": "the cat", "fb": "The cat was there, but who ran? Line 3." } ],
+          "hints": ["Look at line 3."] },
+        { "id": "g1", "type": "gaps", "title": "Regular verbs", "prompt": "Write the verbs in the past simple.", "promptDe": "Schreib die Verben im Past Simple.",
+          "text": "Mia {{walked}} (walk) to the park. She {{looked}} (look) everywhere. They {{stopped}} (stop) at the gate.",
+          "feedback": { "stoped": "With short verbs like *stop* you double the last letter: stop → stopped.", "walk": "Past simple: add **-ed**." },
+          "hints": ["Regular verbs end in **-ed**.", "stop → double p"], "explain": "Regular verbs get **-ed**. Short verbs like *stop* double the last letter." },
+        { "id": "g2", "type": "gaps", "title": "Choose the form", "prompt": "Tap the right form.", "promptDe": "Tippe die richtige Form an.",
+          "text": "Toby {{*ran|runned|run}} away. Mia {{*didn't find|didn't found|not found}} him.",
+          "gapFeedback": { "1": { "runned": "*run* is irregular: run → ran." }, "2": { "didn't found": "After *didn't* the verb stays in the base form: didn't **find**." } } },
+        { "id": "g3", "type": "gaps", "title": "Contractions count too", "prompt": "Make the sentence negative.", "promptDe": "Verneine den Satz.",
+          "text": "Toby came home. → Toby {{didn't come|did not come}} home." }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "More practice",
+      "track": "basis",
+      "tasks": [
+        { "id": "m1", "type": "match", "title": "Irregular verbs", "prompt": "Match the verbs to their past forms.", "promptDe": "Ordne die Verben ihren Vergangenheitsformen zu.",
+          "pairs": [ ["go", "went"], ["see", "saw"], ["come", "came"] ], "extra": ["goed"] },
+        { "id": "so1", "type": "sort", "title": "Regular or irregular?", "prompt": "Sort the verbs.", "promptDe": "Sortiere die Verben.",
+          "categories": ["regular", "irregular"],
+          "items": [ { "t": "played", "c": 0 }, { "t": "went", "c": 1 }, { "t": "stopped", "c": 0 }, { "t": "saw", "c": 1 } ] }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "Challenge",
+      "track": "plus",
+      "tasks": [
+        { "id": "p1", "type": "pool", "pick": 1, "tasks": [
+          { "id": "p1a", "type": "gaps", "title": "Irregular verbs A", "prompt": "Write the past simple.", "promptDe": "Schreib das Past Simple.",
+            "text": "go → {{went}}, see → {{saw}}", "bank": true, "bankExtra": ["goed"] },
+          { "id": "p1b", "type": "gaps", "title": "Irregular verbs B", "prompt": "Write the past simple.", "promptDe": "Schreib das Past Simple.",
+            "text": "come → {{came}}, find → {{found}}", "bank": true, "bankExtra": ["finded"] }
+        ] },
+        { "id": "mc1", "type": "choice", "title": "Which sentences are in the past?", "prompt": "Choose all correct answers.", "promptDe": "Wähle alle richtigen Antworten.", "multi": true,
+          "options": [ { "t": "Mia woke up early.", "ok": true }, { "t": "Toby runs away.", "fb": "*runs* is present simple." }, { "t": "They looked everywhere.", "ok": true }, { "t": "We go home.", "fb": "*go* is present simple." } ] }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Story",
+      "tasks": [
+        { "id": "o1", "type": "order", "title": "Put the story in order", "prompt": "Move the parts into the right order.", "promptDe": "Bring die Teile in die richtige Reihenfolge.",
+          "items": [ "Mia woke up early.", "She walked to the park with Toby.", "Toby saw a cat and ran away.", "In the evening Toby came home." ] },
+        { "id": "mk1", "type": "mark", "title": "Find the past forms", "prompt": "Tap all verbs in the past simple.", "promptDe": "Tippe alle Verben im Past Simple an.",
+          "text": "Yesterday Ben [missed] the bus. He [ran] to school and [was] late. His teacher is nice." },
+        { "id": "w1", "type": "write", "title": "Your story", "prompt": "Write a short story about a day when something went wrong.", "promptDe": "Schreib eine kurze Geschichte über einen Tag, an dem etwas schiefging.",
+          "points": 10, "minWords": 40, "maxWords": 80, "starter": "Last weekend …",
+          "useWords": ["suddenly", "then", "finally"],
+          "checklist": ["My story is in the past simple.", "It has a beginning, a middle and an end."],
+          "checklistDe": ["Meine Geschichte steht im Past Simple.", "Sie hat einen Anfang, einen Mittelteil und einen Schluss."],
+          "criteria": ["Past simple used correctly", "Clear order of events", "Linking words"] }
+      ]
+    }
+  ]
+}

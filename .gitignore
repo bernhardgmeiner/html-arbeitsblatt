@@ -1,0 +1,6 @@
+dist/
+node_modules/
+*.meta.json
+*_loesungen.*
+abgaben/
+__pycache__/
