@@ -87,7 +87,7 @@ async function answer(p, tk, right) {
       await p.click('[data-drop="s' + i + '"]');
     }
   } else if (tk.type === 'sort') {
-    for (const it of tk.items) { await clickText(p, '[data-tile]', it.t); await p.click('[data-drop="c' + (right ? it.c : (it.c + 1) % tk.categories.length) + '"]'); }
+    for (const it of tk.items) { await clickText(p, '[data-tile]', it.t); const dz = '[data-drop="c' + (right ? it.c : (it.c + 1) % tk.categories.length) + '"]'; const bb = await p.locator(dz).boundingBox(); await p.click(dz, { position: { x: 8, y: bb.height - 6 } }); }
   } else if (tk.type === 'order') {
     if (!right) return;
     for (let guard = 0; guard < 60; guard++) {
@@ -222,7 +222,7 @@ print(json.dumps({'P':json.loads(raw),'sum':str(m['/Keywords'])=='ab-sum:'+want,
             await other.close(); await p.bringToFront();
             if (!realBlur) { await p.evaluate(() => window.dispatchEvent(new Event('blur'))); await p.waitForTimeout(100); }
             ok(await p.isVisible('#ab-ov [data-act="return"]'), 'Aufgaben werden beim Verlassen nicht ausgeblendet');
-            const hiddenCovers = await p.evaluate(() => { const o = document.getElementById('ab-ov'); const r = o.getBoundingClientRect(); return r.width >= innerWidth - 1 && r.height >= innerHeight - 1 && getComputedStyle(o).backgroundColor !== 'rgba(0, 0, 0, 0)'; });
+            const hiddenCovers = await p.evaluate(() => { const o = document.getElementById('ab-ov'); const r = o.getBoundingClientRect(); const de = document.documentElement; return r.width >= de.clientWidth - 1 && r.height >= de.clientHeight - 1 && getComputedStyle(o).backgroundColor !== 'rgba(0, 0, 0, 0)'; });
             ok(hiddenCovers, 'Überlagerung deckt die Aufgaben nicht vollständig ab');
             await p.evaluate(() => window.dispatchEvent(new Event('focus')));
             await goTo(p, 'return');
