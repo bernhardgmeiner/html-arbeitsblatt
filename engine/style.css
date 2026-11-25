@@ -60,6 +60,8 @@ main{max-width:980px;margin:0 auto;padding:clamp(14px,3vw,32px) clamp(12px,3vw,2
 .hero{background:var(--accent-soft);border-radius:var(--r);padding:clamp(18px,4vw,36px);margin-bottom:18px;position:relative;overflow:hidden}
 .hero .meta{color:var(--accent-ink);font-weight:700;font-size:.85em;margin-bottom:.6em}
 .hero p{max-width:40em}
+.hero.with-pic .hero-pic{margin:0 0 18px}
+.hero.with-pic .hero-pic img{max-width:none;border:0}
 .rules{list-style:none;margin:0;padding:0}
 .rules li{padding:8px 0 8px 30px;position:relative;border-top:1px solid var(--line)}
 .rules li:first-child{border-top:0}

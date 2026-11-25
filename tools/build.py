@@ -168,7 +168,7 @@ def check_task(tk, sid, c, seen, help_de, hint_cost, S):
     hints = tk.get("hints") or []
     if hints and help_de and len(tk.get("hintsDe") or []) != len(hints) and S.get("helpDeHints", False):
         c.warn(where, "Hinweise ohne deutsche Fassung")
-    if hints and hint_cost and t not in ("write", "info") and len(hints) * hint_cost >= max_pts(tk):
+    if hints and hint_cost and t not in ("write", "info") and max_pts(tk) > 0 and len(hints) * hint_cost >= max_pts(tk):
         c.warn(where, f"alle Hinweise zusammen kosten {len(hints) * hint_cost} von {max_pts(tk)} Punkten")
     if t == "choice":
         opts = tk.get("options") or []
@@ -268,7 +268,7 @@ def embed_images(S, base, c, help_de):
         if not str(img.get("alt", "")).strip() or len(img["alt"].strip()) < 5:
             c.err(where, "Bild braucht einen Alternativtext (alt), der beschreibt, was zu sehen ist")
         if img["src"].startswith("data:"):
-            found.append((where, len(img["src"]) * 3 // 4)); return
+            found.append((where, len(img["src"]) * 3 // 4, img["src"][:200])); return
         path = os.path.normpath(os.path.join(base, img["src"]))
         ext = os.path.splitext(path)[1].lower()
         if ext not in IMG_TYPES:
@@ -288,8 +288,9 @@ def embed_images(S, base, c, help_de):
             except Exception as e:
                 c.warn(where, f"Bildgröße nicht lesbar ({e})")
         img["src"] = f"data:{IMG_TYPES[ext]};base64," + base64.b64encode(data).decode()
-        found.append((where, len(data)))
+        found.append((where, len(data), path))
 
+    if S.get("image"): one(S["image"], "Startbildschirm")
     for st in S.get("stations", []):
         for tk in st.get("tasks", []):
             for t in (tk.get("tasks", []) if tk.get("type") == "pool" else [tk]):
@@ -297,9 +298,11 @@ def embed_images(S, base, c, help_de):
                 if t.get("image"): one(t["image"], where)
                 for o in t.get("options", []) or []:
                     if isinstance(o, dict) and o.get("img"): one(o["img"], where + " Option „" + str(o.get("t")) + "“")
-    if len(found) > 4:
-        c.warn("Bilder", f"{len(found)} Bilder: mehr als vier machen die Datei schwer und lenken ab")
-    total = sum(n for _, n in found) // 1024
+    uniq = {}
+    for where, n, key in found: uniq.setdefault(key, n)   # dasselbe Bild an mehreren Stellen wird nur einmal gespeichert
+    if len(uniq) > 4:
+        c.warn("Bilder", f"{len(uniq)} verschiedene Bilder: mehr als vier machen die Datei schwer und lenken ab")
+    total = sum(uniq.values()) // 1024
     if total > 900: c.warn("Bilder", f"Bilder zusammen {total} KB; die Datei wird groß (Handy, schwaches WLAN)")
     return found
 
@@ -380,6 +383,7 @@ def split_images(S):
             html_parts.append(f'<script type="text/plain" id="ab-img-{pool[src]}">{src}</script>')
         img["src"] = "#img:" + str(pool[src])
 
+    if S.get("image"): take(S["image"])
     for st in S.get("stations", []):
         for tk in st.get("tasks", []):
             for t in (tk.get("tasks", []) if tk.get("type") == "pool" else [tk]):

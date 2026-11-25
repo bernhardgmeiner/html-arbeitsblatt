@@ -157,7 +157,7 @@
       warnOpen: 'Not finished yet:', warnShort: 'Too short:', handIn: 'Hand in and create PDF',
       sureH: 'Hand in now?', sureP: 'After handing in you cannot change your answers any more.', sureYes: 'Hand in', sureNo: 'Not yet',
       doneH: 'Handed in!', doneP: 'Your PDF {file} has been downloaded. Upload it to {to}.', again: 'Download the PDF again',
-      doneFind: 'Can’t find it? Look in your Downloads folder.', results: 'Your results',
+      doneFind: 'Can’t find it? Look in your Downloads folder. On an iPad or iPhone: Files app → Downloads.', results: 'Your results',
       welcome: 'Welcome back, {name}!', welcomeP: 'Your answers are still here. You can go on where you stopped.', cont: 'Go on', restart: 'Start again',
       restartH: 'Start again?', restartP: 'All your answers will be deleted. A new start is written down in the record.', restartYes: 'Delete and start again',
       noStore: 'This browser cannot save your progress. Do not close or reload the page.',
@@ -195,7 +195,7 @@
       warnOpen: 'Noch nicht fertig:', warnShort: 'Zu kurz:', handIn: 'Abgeben und PDF erstellen',
       sureH: 'Jetzt abgeben?', sureP: 'Nach der Abgabe kannst du deine Antworten nicht mehr ändern.', sureYes: 'Abgeben', sureNo: 'Noch nicht',
       doneH: 'Abgegeben!', doneP: 'Dein PDF {file} wurde heruntergeladen. Lade es in {to} hoch.', again: 'PDF noch einmal herunterladen',
-      doneFind: 'Du findest es nicht? Schau im Ordner „Downloads“ nach.', results: 'Deine Ergebnisse',
+      doneFind: 'Du findest es nicht? Schau im Ordner „Downloads“ nach. Am iPad oder iPhone: App „Dateien“ → „Downloads“.', results: 'Deine Ergebnisse',
       welcome: 'Willkommen zurück, {name}!', welcomeP: 'Deine Antworten sind noch da. Du kannst dort weitermachen, wo du aufgehört hast.', cont: 'Weitermachen', restart: 'Neu beginnen',
       restartH: 'Neu beginnen?', restartP: 'Alle Antworten werden gelöscht. Der Neustart wird im Protokoll vermerkt.', restartYes: 'Löschen und neu beginnen',
       noStore: 'Dieser Browser kann deinen Fortschritt nicht speichern. Schließ die Seite nicht und lade sie nicht neu.',
@@ -485,7 +485,13 @@
     function drop(target) { if (armed == null) return; opts.place(armed, target === 'pool' ? null : target); armed = null; Object.values(tiles).forEach(b => b.setAttribute('aria-pressed', 'false')); layout(); }
     box.addEventListener('click', e => {
       const tile = e.target.closest('[data-tile]');
-      if (tile && box.contains(tile)) { if (tile.disabled) return; if (tile._dragged) { tile._dragged = false; return; } arm(tile.dataset.tile); e.stopPropagation(); return; }
+      if (tile && box.contains(tile)) {
+        if (tile.disabled) return; if (tile._dragged) { tile._dragged = false; return; }
+        // Eine Karte ist gewählt und man tippt auf eine schon abgelegte Karte: dorthin ablegen (volle Spalten am Tablet)
+        const host = tile.parentElement && tile.parentElement.closest('[data-drop]');
+        if (armed != null && String(armed) !== tile.dataset.tile && host && box.contains(host) && host.dataset.drop !== 'pool') { drop(host.dataset.drop); e.stopPropagation(); return; }
+        arm(tile.dataset.tile); e.stopPropagation(); return;
+      }
       const d = e.target.closest('[data-drop]');
       if (d && box.contains(d) && armed != null) drop(d.dataset.drop);
     });
@@ -828,7 +834,7 @@
     root.appendChild(header(false));
     const m = el('main');
     const meta = [S.subject, S.class, S.level].filter(Boolean).join(' · ');
-    m.appendChild(el('section', { class: 'hero' }, (meta ? '<div class="meta">' + esc(meta) + '</div>' : '') + '<h1>' + esc(S.title) + '</h1>' + (S.subtitle ? '<p>' + esc(S.subtitle) + deLine(S, 'subtitle') + '</p>' : '') + (S.intro ? md(S.intro) : '')));
+    m.appendChild(el('section', { class: 'hero' + (S.image ? ' with-pic' : '') }, (S.image ? pic(S.image, 'hero-pic') : '') + (meta ? '<div class="meta">' + esc(meta) + '</div>' : '') + '<h1>' + esc(S.title) + '</h1>' + (S.subtitle ? '<p>' + esc(S.subtitle) + deLine(S, 'subtitle') + '</p>' : '') + (S.intro ? md(S.intro) : '')));
     const rules = [];
     rules.push(INSTANT ? tb('instant') : tb('end'));
     if (INSTANT) rules.push(CFG.attempts > 1 ? tb('triesN', { n: CFG.attempts, p: Math.round(CFG.laterFactor * 100) }) : tb('tries1'));
@@ -936,7 +942,7 @@
       hintBtn = btn(esc(t('hint')) + (left > 0 ? ' (' + left + ')' : ''), 'ghost', () => {
         if (st.hints >= tk.hints.length) { toast(t('noHints')); return; }
         st.hints++; log('hinweis', { id: tk.id, n: st.hints }); save(); drawHints(); render();
-      }, { 'data-act': 'hint', disabled: left <= 0 ? true : null, title: CFG.hintCost > 0 && !isTeacher(tk) ? t('hintCostNote', { c: costLabel(CFG.hintCost) }) : null });
+      }, { 'data-act': 'hint', disabled: left <= 0 ? true : null, title: CFG.hintCost > 0 && !isTeacher(tk) && maxPts(tk) > 0 ? t('hintCostNote', { c: costLabel(CFG.hintCost) }) : null });
     }
     if (CFG.allowSkip && !isInfo(tk) && !(INSTANT && st.final) && !last) skipBtn = btn(esc(t('skipBtn')), 'ghost', () => { st.skipped = true; log('übersprungen', { id: tk.id }); next(); }, { 'data-act': 'skip' });
     if (INSTANT && !isInfo(tk) && !isTeacher(tk) && !st.final) checkBtn = btn(esc(t('check')), 'accent', () => check(tk, st), { 'data-act': 'check' });
@@ -1034,7 +1040,7 @@
     root.appendChild(header(true));
     const m = el('main'), f = flow();
     m.appendChild(el('section', { class: 'hero' }, '<h1>' + esc(t('sumTitle')) + '</h1><p>' + tb('sumIntro') + '</p>'));
-    const open = f.filter(x => !x.locked && !isInfo(x.t) && ['open', 'skip', 'part'].includes(status(x.t)));
+    const open = f.filter(x => !x.locked && !isInfo(x.t) && (maxPts(x.t) > 0 || isTeacher(x.t)) && ['open', 'skip', 'part'].includes(status(x.t)));   // Aufgaben ohne Punkte (Bonus) gelten nicht als offen
     const short = f.filter(x => isTeacher(x.t) && x.t.minWords && countWords((state.tasks[x.t.id] || {}).resp && state.tasks[x.t.id].resp.text) < x.t.minWords);
     if (open.length || short.length) {
       let h = '';
