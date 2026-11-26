@@ -11,7 +11,7 @@ Gebaut von Bernhard Gmeiner (GRG 15 Auf der Schmelz, Wien) mit Claude. Angeregt 
 - Rückmeldung, die erklärt, warum eine Antwort falsch ist; nach dem letzten Versuch die Lösung.
 - Punkte mit Abzug für spätere Versuche und Hinweise, Variantenpools, Verzweigung in Weg Basis und Weg Plus.
 - Speichern im Browser: Pause, Schließen und später weitermachen, Aufgaben überspringen.
-- Protokoll: aktive Zeit gesamt und pro Aufgabe, Fensterwechsel (Aufgaben werden dabei ausgeblendet), blockierte Einfüge- und Kopierversuche, große Texteinschübe, Pausen, Neustarts. Auf dem Startbildschirm steht offen, was protokolliert wird.
+- Protokoll: aktive Zeit gesamt und pro Aufgabe, Fensterwechsel (Aufgaben werden dabei ausgeblendet; ein Fokusverlust unter 3 s ohne Seitenwechsel, etwa durch die iPad-Tastatur, zählt nur still als „kurzer Fokuswechsel“), blockierte Einfüge- und Kopierversuche, große Texteinschübe, Pausen, Neustarts. Auf dem Startbildschirm steht offen, was protokolliert wird.
 - Versteckter Hinweis an KI-Werkzeuge im Quelltext; Lösungen liegen nur verschleiert in der Datei.
 - Abgabe als PDF mit Antworten, Lösungen, Protokoll und eingebetteten Daten samt Prüfsumme; `tools/auswerten.py` macht daraus eine Excel-Übersicht und eine Sammlung der offenen Texte.
 

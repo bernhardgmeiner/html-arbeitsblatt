@@ -220,7 +220,16 @@ print(json.dumps({'P':json.loads(raw),'sum':str(m['/Keywords'])=='ab-sum:'+want,
             const realBlur = await p.isVisible('#ab-ov');
             note('echter Fensterwechsel (zweiter Tab) blendet aus: ' + (realBlur ? 'ja' : 'nein, headless meldet keinen Fokusverlust'));
             await other.close(); await p.bringToFront();
-            if (!realBlur) { await p.evaluate(() => window.dispatchEvent(new Event('blur'))); await p.waitForTimeout(100); }
+            if (!realBlur) {
+              // Kurzer Fokusverlust (iPad-Tastatur): blur, nach 0,3 s wieder focus. Darf nicht ausblenden.
+              await p.evaluate(() => window.dispatchEvent(new Event('blur'))); await p.waitForTimeout(300);
+              await p.evaluate(() => window.dispatchEvent(new Event('focus'))); await p.waitForTimeout(3300);
+              ok(!(await p.isVisible('#ab-ov')), 'kurzer Fokusverlust (unter 3 s) blendet die Aufgaben aus');
+              // Echtes Verlassen: Fenster bleibt ohne Fokus, nach 3 s wird ausgeblendet.
+              await p.evaluate(() => { window.__hf = document.hasFocus; document.hasFocus = () => false; window.dispatchEvent(new Event('blur')); });
+              await p.waitForTimeout(3400);
+              await p.evaluate(() => { document.hasFocus = window.__hf; });
+            }
             ok(await p.isVisible('#ab-ov [data-act="return"]'), 'Aufgaben werden beim Verlassen nicht ausgeblendet');
             const hiddenCovers = await p.evaluate(() => { const o = document.getElementById('ab-ov'); const r = o.getBoundingClientRect(); const de = document.documentElement; return r.width >= de.clientWidth - 1 && r.height >= de.clientHeight - 1 && getComputedStyle(o).backgroundColor !== 'rgba(0, 0, 0, 0)'; });
             ok(hiddenCovers, 'Überlagerung deckt die Aufgaben nicht vollständig ab');
@@ -249,6 +258,7 @@ print(json.dumps({'P':json.loads(raw),'sum':str(m['/Keywords'])=='ab-sum:'+want,
     const kinds = k => st.log.filter(x => x.k === k).length;
     ok(kinds('einfügen') >= 1, 'Einfüge-Versuch nicht protokolliert');
     ok(kinds('kopieren') >= 1, 'Kopier-Versuch nicht protokolliert');
+    ok(kinds('kurz-weg') >= 1, 'kurzer Fokuswechsel nicht protokolliert');
     ok(kinds('verlassen') === 1 && kinds('zurück') === 1, 'Fensterwechsel falsch protokolliert: ' + st.log.filter(x => !['prüfen','text'].includes(x.k)).map(x => x.k + (x.why ? '(' + x.why + ')' : '')).join(' > '));
     ok(kinds('pause') === 1 && kinds('pause-ende') === 1, 'Pause falsch protokolliert');
     ok(kinds('einschub') >= 1, 'großer Einschub nicht protokolliert');

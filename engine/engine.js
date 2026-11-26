@@ -1123,9 +1123,9 @@
 
   /* ---------- Protokoll: Fenster verlassen ---------- */
   let unloading = false;
-  function goAway(why) {
+  function goAway(why, at) {
     if (!SURV.focus || !running() || paused || away || unloading) return;
-    away = { at: now(), why };
+    away = { at: at || now(), why };
     log('verlassen', { why });
     overlay(tb('awayH'), tb('awayP'), t('awayBack'), () => { const o = $('#ab-ov'); o && o.remove(); if (away && !away.back) comeBack(); away = null; }, 'return');
   }
@@ -1134,9 +1134,33 @@
     away.back = now();
     log('zurück', { ms: away.back - away.at });
   }
-  window.addEventListener('blur', () => goAway('blur'));
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { goAway('hidden'); save(); } else comeBack(); });
-  window.addEventListener('focus', comeBack);
+  // Ein kurzes blur ohne Seitenwechsel zählt nicht als Verlassen: Am iPad nimmt Safari dem Fenster beim Einblenden
+  // der Bildschirmtastatur kurz den Fokus (Abgaben der 4E, 26.11.2026: bis zu 28-mal, im Schnitt etwa 1 s).
+  // Erst wenn das Fenster nach BLIP_MS noch keinen Fokus hat oder die Seite verborgen wird, gilt es als Verlassen.
+  // Kurze Fokuswechsel werden still als 'kurz-weg' mitgezählt, ohne Warnung.
+  const BLIP_MS = 3000;
+  let blurTimer = null, blurAt = 0;
+  function onBlur() {
+    if (!SURV.focus || !running() || paused || away || unloading || blurTimer) return;
+    blurAt = now();
+    blurTimer = setTimeout(() => {
+      blurTimer = null;
+      if (document.visibilityState === 'visible' && document.hasFocus()) { log('kurz-weg', { ms: now() - blurAt }); return; }
+      goAway('blur', blurAt);
+    }, BLIP_MS);
+  }
+  function onFocus() {
+    if (blurTimer) { clearTimeout(blurTimer); blurTimer = null; if (running()) log('kurz-weg', { ms: now() - blurAt }); return; }
+    comeBack();
+  }
+  window.addEventListener('blur', onBlur);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      let at; if (blurTimer) { clearTimeout(blurTimer); blurTimer = null; at = blurAt; }
+      goAway('hidden', at); save();
+    } else comeBack();
+  });
+  window.addEventListener('focus', onFocus);
 
   /* ---------- Protokoll: Einfügen, Kopieren, große Einschübe, Drucken ---------- */
   const editable = n => n && (n.tagName === 'TEXTAREA' || (n.tagName === 'INPUT' && /^(text|search|)$/.test(n.type || '')) || n.isContentEditable);
@@ -1211,7 +1235,7 @@
     let awayMs = 0; L2.filter(x => x.k === 'zurück').forEach(x => { awayMs += x.ms || 0; });
     let pauseMs = 0, ps = null; L2.forEach(x => { if (x.k === 'pause') ps = x.t; if (x.k === 'pause-ende' && ps) { pauseMs += x.t - ps; ps = null; } });
     let closedMs = 0, lastT = null; L2.forEach(x => { if (x.k === 'weiter' && lastT) closedMs += x.t - lastT; lastT = x.t; });
-    return { leaves: c('verlassen'), awayMs, paste: c('einfügen'), copy: c('kopieren'), inserts: c('einschub'), pauses: c('pause'), pauseMs, reopen: c('weiter'), closedMs, hints: Object.values(state.tasks).reduce((s, x) => s + (x.hints || 0), 0), print: c('drucken') };
+    return { leaves: c('verlassen'), blips: c('kurz-weg'), awayMs, paste: c('einfügen'), copy: c('kopieren'), inserts: c('einschub'), pauses: c('pause'), pauseMs, reopen: c('weiter'), closedMs, hints: Object.values(state.tasks).reduce((s, x) => s + (x.hints || 0), 0), print: c('drucken') };
   }
   function payload() {
     const tt = totals(), f = flow().filter(x => !x.locked);
@@ -1273,6 +1297,7 @@
     y += 2; color(30, 36, 44); text('Protokoll', M, { size: 12, bold: true });
     const rows = [];
     if (SURV.focus) rows.push(['Fenster verlassen', st.leaves + '-mal' + (st.leaves ? ', zusammen ' + fmtDur(st.awayMs) + ' außerhalb' : ''), st.leaves > 0]);
+    if (SURV.focus) rows.push(['Kurze Fokuswechsel', st.blips + '-mal' + (st.blips ? ' (unter 3 s, am iPad meist die Tastatur; zählt nicht als Verlassen)' : '')]);
     if (SURV.paste) rows.push(['Einfüge-Versuche', st.paste + ' (blockiert)', st.paste > 0]);
     if (SURV.copy) rows.push(['Kopier-Versuche', st.copy + ' (blockiert)', st.copy > 0]);
     rows.push(['Große Texteinschübe', st.inserts + (st.inserts ? ' (Diktat, Autokorrektur oder Wortvorschlag möglich)' : ''), st.inserts > 0]);
@@ -1318,7 +1343,7 @@
     // Ereignisliste
     if (state.log.length) {
       need(20); y += 2; text('Ereignisse', M, { size: 12, bold: true });
-      const names = { start: 'Start', 'verlassen': 'Fenster verlassen', 'zurück': 'zurück', 'einfügen': 'Einfügen blockiert', 'kopieren': 'Kopieren blockiert', 'einschub': 'großer Einschub', pause: 'Pause', 'pause-ende': 'Pause beendet', 'prüfen': 'geprüft', 'hinweis': 'Hinweis', 'übersprungen': 'übersprungen', 'weg': 'Weg festgelegt', 'seite-zu': 'Seite geschlossen', 'weiter': 'wieder geöffnet', text: 'Text gespeichert', abgabe: 'Abgabe', drucken: 'Druckversuch' };
+      const names = { start: 'Start', 'verlassen': 'Fenster verlassen', 'zurück': 'zurück', 'kurz-weg': 'kurzer Fokuswechsel', 'einfügen': 'Einfügen blockiert', 'kopieren': 'Kopieren blockiert', 'einschub': 'großer Einschub', pause: 'Pause', 'pause-ende': 'Pause beendet', 'prüfen': 'geprüft', 'hinweis': 'Hinweis', 'übersprungen': 'übersprungen', 'weg': 'Weg festgelegt', 'seite-zu': 'Seite geschlossen', 'weiter': 'wieder geöffnet', text: 'Text gespeichert', abgabe: 'Abgabe', drucken: 'Druckversuch' };
       const relevant = state.log.filter(x => x.k !== 'prüfen' && x.k !== 'text');
       const shown = relevant.slice(0, 300);
       shown.forEach(x => {

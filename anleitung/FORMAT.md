@@ -37,7 +37,7 @@ Die Quell-JSON enthält alle Lösungen im Klartext. Sie gehört **nie** in diese
 | `allowPause` | true | Knopf „Pause“. |
 | `selfDeclaration` | true | Kästchen „ohne KI-Werkzeuge und ohne Hilfe“ auf dem Startbildschirm, Pflicht zum Starten. |
 | `revealAfterSubmit` | true | Im Modus `end` nach der Abgabe die Punkte zeigen. |
-| `surveillance` | alles `true` | `paste` (Einfügen sperren und protokollieren), `copy` (Kopieren der Aufgaben sperren), `focus` (beim Verlassen des Fensters ausblenden und protokollieren), `time` (Zeit protokollieren), `print` (Druckversuche protokollieren). Auf dem Startbildschirm steht nur, was eingeschaltet ist. |
+| `surveillance` | alles `true` | `paste` (Einfügen sperren und protokollieren), `copy` (Kopieren der Aufgaben sperren), `focus` (beim Verlassen des Fensters ausblenden und protokollieren; Seite verborgen zählt sofort, Fokusverlust ohne Seitenwechsel erst nach 3 s, kürzere werden still als „kurzer Fokuswechsel“ gezählt), `time` (Zeit protokollieren), `print` (Druckversuche protokollieren). Auf dem Startbildschirm steht nur, was eingeschaltet ist. |
 
 Immer aktiv, nicht abschaltbar: großer Texteinschub wird protokolliert (ab 18 Zeichen in einer Lücke, ab 30 in einem Textfeld auf einmal; das kann auch Diktat oder Autokorrektur sein), Neustarts werden gezählt, der versteckte Hinweis an KI-Werkzeuge steht im Quelltext (HTML-Kommentar, unsichtbares Element, Skript-Kommentar).
 

@@ -60,7 +60,7 @@ def main():
     titles = {t["id"]: t["title"] or t["id"] for t in meta["tasks"]}
     head = ["Name", "Klasse", "Variante", "Beginn", "Abgabe", "Aktiv (min)", "Punkte auto", "von", "Prozent", "Offen (Lehrperson)",
             "Weg", "Selbstständig", "Neustarts", "Fenster verlassen", "außerhalb (min)", "Einfügen", "Kopieren", "Große Einschübe",
-            "Pausen", "Seite geschlossen", "Hinweise", "Prüfung", "Datei"] + [titles[i] for i in task_ids]
+            "Pausen", "Seite geschlossen", "Hinweise", "Prüfung", "Datei", "Ø s je Verlassen", "Kurze Fokuswechsel (unter 3 s)"] + [titles[i] for i in task_ids]
     data = []
     for r in sorted(rows, key=lambda x: (x["P"]["cls"], x["P"]["name"].lower())):
         P, s = r["P"], r["P"]["stats"]
@@ -69,7 +69,8 @@ def main():
                      round(P["auto"] / P["autoMax"] * 100) if P["autoMax"] else 0, P["open"], P.get("track") or "",
                      "ja" if P.get("declared") else ("NEIN" if P.get("declared") is False else "-"),
                      P.get("restarts", 0), s["leaves"], round(s["awayMs"] / 60000, 1), s["paste"], s["copy"], s["inserts"], s["pauses"], s["reopen"], s["hints"],
-                     "ok" if r["ok"] and not r["note"] else r["note"], r["file"]] + [per.get(i, "") for i in task_ids])
+                     "ok" if r["ok"] and not r["note"] else r["note"], r["file"],
+                     round(s["awayMs"] / s["leaves"] / 1000, 1) if s["leaves"] else "", s.get("blips", "alte Version")] + [per.get(i, "") for i in task_ids])
     seen = {}
     for d in data: seen.setdefault((d[0].lower(), d[1]), []).append(d[22])
     dup = {k: v for k, v in seen.items() if len(v) > 1}
