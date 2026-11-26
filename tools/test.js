@@ -206,7 +206,7 @@ print(json.dumps({'P':json.loads(raw),'sum':str(m['/Keywords'])=='ab-sum:'+want,
           await p.fill('input.gap:not([readonly])', '');
         }
         if (tk.hints && tk.hints.length && !usedHint && tk.type === 'gaps') { usedHint = true; await goTo(p, 'hint'); ok(await p.isVisible('.hint'), 'Hinweis wird nicht angezeigt'); }
-        if (tk.type === 'choice' && !copied) {
+        if (!copied && tk.type !== 'write') { // Kopiertest an der ersten bewerteten Aufgabe, nicht nur bei choice
           copied = true;
           await p.evaluate(() => { const h = document.querySelector('main h2'); const r = document.createRange(); r.selectNodeContents(h); const s = getSelection(); s.removeAllRanges(); s.addRange(r); });
           await p.keyboard.press('Control+C');
